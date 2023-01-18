@@ -1,6 +1,6 @@
 package com.iamdreamcatcher.restaurantChain.controller;
 
-import com.iamdreamcatcher.restaurantChain.dto.RestApiResponse;
+import com.iamdreamcatcher.restaurantChain.dto.response.RestApiResponse;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;

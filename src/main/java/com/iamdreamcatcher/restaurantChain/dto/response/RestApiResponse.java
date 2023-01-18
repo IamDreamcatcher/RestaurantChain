@@ -1,4 +1,4 @@
-package com.iamdreamcatcher.restaurantChain.dto;
+package com.iamdreamcatcher.restaurantChain.dto.response;
 
 import lombok.Getter;
 import lombok.Setter;

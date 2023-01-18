@@ -29,7 +29,8 @@ public class SecurityConfig {
 
                 .and()
                 .formLogin()
-                .defaultSuccessUrl("/welcome", true)
+                .loginPage("/auth/login")
+                .defaultSuccessUrl("/", true)
 
                 .and()
                 .logout()
