@@ -1,10 +1,10 @@
 package com.iamdreamcatcher.restaurantChain.model.user;
 
 public enum Permission {
-    OWNER("owner"),
-    ADMIN("admin"),
-    EMPLOYEE("employee"),
-    USER("user");
+    OWN("own"),
+    MANAGE("manage"),
+    WORK("work"),
+    USE("use");
 
     private final String permission;
 

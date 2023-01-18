@@ -20,12 +20,13 @@ public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
-
+    @Enumerated(value = EnumType.STRING)
+    private Status status;
+    @Enumerated(value = EnumType.STRING)
+    private Role role;
     private String email;
     private String password;
     private String name;
-    @Enumerated(value = EnumType.STRING)
-    private Status status;
 
     private boolean isActive() {
         return status.equals(Status.ACTIVE);
@@ -33,32 +34,39 @@ public class User implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return null;
+        return this.getRole().getAuthorities();
     }
 
-    @Override
-    public String getPassword() {
-        return null;
+    public UserDetails getUserDetails() {
+        return new org.springframework.security.core.userdetails.User(
+                this.getUsername(),
+                this.getPassword(),
+                this.isAccountNonExpired(),
+                this.isCredentialsNonExpired(),
+                this.isAccountNonLocked(),
+                this.isEnabled(),
+                this.getRole().getAuthorities()
+        );
     }
 
     @Override
     public String getUsername() {
-        return null;
+        return email;
     }
 
     @Override
     public boolean isAccountNonExpired() {
-        return false;
+        return isActive();
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        return false;
+        return isActive();
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return false;
+        return isActive();
     }
 
     @Override
