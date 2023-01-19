@@ -15,4 +15,5 @@ public record ClientRegisterRequestDTO(
         @Enumerated(EnumType.STRING)
         Status status
 ) {
+
 }
