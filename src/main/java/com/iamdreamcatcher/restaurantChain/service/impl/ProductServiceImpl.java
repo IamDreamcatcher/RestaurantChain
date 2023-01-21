@@ -2,7 +2,7 @@ package com.iamdreamcatcher.restaurantChain.service.impl;
 
 import com.iamdreamcatcher.restaurantChain.dto.model.IngredientDTO;
 import com.iamdreamcatcher.restaurantChain.dto.model.ProductDTO;
-import com.iamdreamcatcher.restaurantChain.dto.request.ProductCreationRequestDTO;
+import com.iamdreamcatcher.restaurantChain.dto.request.ProductRequestDTO;
 import com.iamdreamcatcher.restaurantChain.exception.NoPermissionException;
 import com.iamdreamcatcher.restaurantChain.exception.UserNotLoggedInException;
 import com.iamdreamcatcher.restaurantChain.mapper.ProductMapper;
@@ -50,7 +50,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public ProductDTO createProduct(ProductCreationRequestDTO productDTO) throws UserNotLoggedInException, NoPermissionException {
+    public ProductDTO createProduct(ProductRequestDTO productDTO) throws UserNotLoggedInException, NoPermissionException {
         Restaurant restaurant = restaurantService.getAdminRestaurant();
         Product product = new Product(productDTO.name(), productDTO.description(),
                 productDTO.price(), restaurant, getIngredientsListFromRequest(productDTO));
@@ -59,9 +59,44 @@ public class ProductServiceImpl implements ProductService {
         return productMapper.toProductDTO(product);
     }
 
-    private List<Ingredient> getIngredientsListFromRequest(ProductCreationRequestDTO productDTO) {
+    @Override
+    public ProductDTO updateProduct(Long id, ProductRequestDTO productDTO) throws UserNotLoggedInException, NoPermissionException {
+        Restaurant restaurant = restaurantService.getAdminRestaurant();
+        Product product = productRepository.findProductById(id);
+        if (product.getRestaurant() != restaurant) {
+            throw new NoPermissionException("Admin have no permissions to change this product");
+        }
+        if (productDTO.name() != null) {
+            product.setName(productDTO.name());
+        }
+        if (productDTO.description() != null) {
+            product.setDescription(productDTO.description());
+        }
+        if (productDTO.price() != null) {
+            product.setPrice(productDTO.price());
+        }
+        if (!productDTO.ingredients().isEmpty()) {
+            product.setIngredients(getIngredientsListFromRequest(productDTO));
+        }
+
+        productRepository.save(product);
+        return productMapper.toProductDTO(product);
+    }
+
+    @Override
+    public void deleteProductById(Long id) throws UserNotLoggedInException, NoPermissionException {
+        Restaurant restaurant = restaurantService.getAdminRestaurant();
+        Product product = productRepository.findProductById(id);
+        if (product.getRestaurant() != restaurant) {
+            throw new NoPermissionException("Admin have no permissions to delete this product");
+        }
+
+        productRepository.deleteById(id);
+    }
+
+    private List<Ingredient> getIngredientsListFromRequest(ProductRequestDTO productDTO) {
         List<Ingredient> result = new ArrayList<>();
-        for(IngredientDTO ingredientDTO: productDTO.ingredients()) {
+        for (IngredientDTO ingredientDTO : productDTO.ingredients()) {
             Ingredient ingredient = ingredientRepository.findIngredientByName(ingredientDTO.getName());
             if (ingredient == null) {
                 ingredient = new Ingredient();
