@@ -17,7 +17,8 @@ public class Owner {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
     private User user;
     //TO DO: ad photos;byte[] photo;
     private String cooperationEmail;

@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 public class AuthContextHandler {
     private final UserRepository userRepository;
     public User getLoggedInUser() throws UserNotLoggedInException {
-        String email = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
         User user = userRepository.findByEmail(email);
 
         if (user == null) {

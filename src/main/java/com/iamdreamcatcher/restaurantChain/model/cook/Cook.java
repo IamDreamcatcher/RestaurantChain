@@ -18,7 +18,8 @@ public class Cook {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
     private User user;
     @ManyToOne(fetch = FetchType.EAGER)
     private Restaurant restaurant;

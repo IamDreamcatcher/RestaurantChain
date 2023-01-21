@@ -21,12 +21,20 @@ public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
-
+    private String name;
     private String description;
     private Double price;
     @ManyToOne(fetch = FetchType.EAGER)
     private Restaurant restaurant;
-    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToMany(fetch = FetchType.LAZY)
     private List<Ingredient> ingredients = new ArrayList<>();
+
+    public Product(String name, String description, Double price, Restaurant restaurant, List<Ingredient> ingredients) {
+        this.name = name;
+        this.description = description;
+        this.price = price;
+        this.restaurant = restaurant;
+        this.ingredients = ingredients;
+    }
     //To do: ad photo;
 }
