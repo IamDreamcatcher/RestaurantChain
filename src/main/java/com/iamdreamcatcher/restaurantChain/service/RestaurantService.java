@@ -5,8 +5,6 @@ import com.iamdreamcatcher.restaurantChain.exception.NoPermissionException;
 import com.iamdreamcatcher.restaurantChain.exception.UserNotLoggedInException;
 import com.iamdreamcatcher.restaurantChain.model.restaurant.Restaurant;
 
-import java.util.List;
-
 public interface RestaurantService {
     Iterable<RestaurantDTO> getRestaurants();
 

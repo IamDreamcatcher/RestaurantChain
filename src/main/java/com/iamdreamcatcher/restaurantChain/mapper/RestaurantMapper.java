@@ -9,4 +9,5 @@ import java.util.List;
 @Mapper(componentModel = "spring")
 public interface RestaurantMapper {
     List<RestaurantDTO> toRestaurantDTOList(List<Restaurant> restaurantList);
+    RestaurantDTO toRestaurantDTO(Restaurant restaurant);
 }

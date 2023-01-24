@@ -1,10 +1,14 @@
 package com.iamdreamcatcher.restaurantChain.controller;
 
+import com.iamdreamcatcher.restaurantChain.dto.request.CookRequestDTO;
 import com.iamdreamcatcher.restaurantChain.dto.request.ProductRequestDTO;
 import com.iamdreamcatcher.restaurantChain.dto.response.RestApiResponse;
 import com.iamdreamcatcher.restaurantChain.exception.NoPermissionException;
+import com.iamdreamcatcher.restaurantChain.exception.NotFoundException;
+import com.iamdreamcatcher.restaurantChain.exception.RegistrationException;
 import com.iamdreamcatcher.restaurantChain.exception.UserNotLoggedInException;
-import com.iamdreamcatcher.restaurantChain.service.EmployeeService;
+import com.iamdreamcatcher.restaurantChain.service.CookService;
+import com.iamdreamcatcher.restaurantChain.service.CourierService;
 import com.iamdreamcatcher.restaurantChain.service.ProductService;
 import com.iamdreamcatcher.restaurantChain.service.RestaurantService;
 import lombok.AllArgsConstructor;
@@ -17,7 +21,8 @@ import org.springframework.web.bind.annotation.*;
 public class AdministratorController {
     private final RestaurantService restaurantService;
     private final ProductService productService;
-    private final EmployeeService employeeService;
+    private final CookService cookService;
+    private final CourierService courierService;
 
     @GetMapping()
     public ResponseEntity<?> getAdminRestaurant() throws UserNotLoggedInException, NoPermissionException {
@@ -26,12 +31,12 @@ public class AdministratorController {
 
     @GetMapping("/products")
     public ResponseEntity<?> getAdminProducts() throws NoPermissionException, UserNotLoggedInException {
-        return ResponseEntity.ok(new RestApiResponse("ok", productService.getAdminProducts()));
+        return ResponseEntity.ok(new RestApiResponse("ok", productService.getRestaurantProducts()));
     }
 
     @GetMapping("/products/{id}")
-    public ResponseEntity<?> getAdminProducts(@PathVariable Long id) throws NoPermissionException, UserNotLoggedInException {
-        return ResponseEntity.ok(new RestApiResponse("ok", productService.getAdminProductById(id)));
+    public ResponseEntity<?> getAdminProducts(@PathVariable Long id) throws NoPermissionException, UserNotLoggedInException, NotFoundException {
+        return ResponseEntity.ok(new RestApiResponse("ok", productService.getProductById(id)));
     }
 
     @PostMapping("/products/new")
@@ -40,23 +45,44 @@ public class AdministratorController {
     }
 
     @PutMapping("/products/{id}")
-    public ResponseEntity<?> updateProduct(@PathVariable Long id, @RequestBody ProductRequestDTO productDTO) throws UserNotLoggedInException, NoPermissionException {
+    public ResponseEntity<?> updateProduct(@PathVariable Long id, @RequestBody ProductRequestDTO productDTO) throws UserNotLoggedInException, NoPermissionException, NotFoundException {
         return ResponseEntity.ok(new RestApiResponse(
                 "an product with id = %d has been updated".formatted(id),
                 productService.updateProduct(id, productDTO)));
     }
 
     @DeleteMapping("/products/{id}")
-    public ResponseEntity<?> deleteProduct(@PathVariable Long id) throws UserNotLoggedInException, NoPermissionException {
+    public ResponseEntity<?> deleteProduct(@PathVariable Long id) throws UserNotLoggedInException, NoPermissionException, NotFoundException {
         productService.deleteProductById(id);
 
         return ResponseEntity.ok(new RestApiResponse("an product with id = %d has been deleted".formatted(id)));
     }
 
-    @GetMapping("/employees")
-    public ResponseEntity<?> getEmployees() {
-        return ResponseEntity.ok(new RestApiResponse("ok", employeeService.getRestaurantEmployees()));
+    @GetMapping("/cooks")
+    public ResponseEntity<?> getCooks() throws UserNotLoggedInException, NoPermissionException {
+        return ResponseEntity.ok(new RestApiResponse("ok", cookService.getRestaurantCooks()));
+    }
 
-        //use map for this;
+    @GetMapping("/cooks/{id}")
+    public ResponseEntity<?> getCookById(@PathVariable Long id) throws NoPermissionException, UserNotLoggedInException, NotFoundException {
+        return ResponseEntity.ok(new RestApiResponse("ok", cookService.getCookById(id)));
+    }
+
+    @PostMapping("/cooks/new")
+    public ResponseEntity<?> createCookAccount(@RequestBody CookRequestDTO cookRequestDTO) throws UserNotLoggedInException, NoPermissionException, RegistrationException {
+        return ResponseEntity.ok(new RestApiResponse("ok", cookService.createCookAccount(cookRequestDTO)));
+    }
+
+    @PutMapping("/cooks/{id}")
+    public ResponseEntity<?> updateCookAccount(@PathVariable Long id, @RequestBody CookRequestDTO cookRequestDTO) throws UserNotLoggedInException, NoPermissionException, NotFoundException {
+        return ResponseEntity.ok(new RestApiResponse(
+                "an cook account with id = %d has been updated".formatted(id),
+                cookService.updateCookAccount(id, cookRequestDTO)));
+    }
+
+
+    @GetMapping("/couriers")
+    public ResponseEntity<?> getCouriers() throws UserNotLoggedInException, NoPermissionException {
+        return ResponseEntity.ok(new RestApiResponse("ok", courierService.getRestaurantCouriers()));
     }
 }

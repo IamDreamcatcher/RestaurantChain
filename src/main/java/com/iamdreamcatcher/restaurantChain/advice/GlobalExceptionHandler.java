@@ -2,6 +2,7 @@ package com.iamdreamcatcher.restaurantChain.advice;
 
 import com.iamdreamcatcher.restaurantChain.dto.model.ErrorDTO;
 import com.iamdreamcatcher.restaurantChain.exception.NoPermissionException;
+import com.iamdreamcatcher.restaurantChain.exception.NotFoundException;
 import com.iamdreamcatcher.restaurantChain.exception.RegistrationException;
 import com.iamdreamcatcher.restaurantChain.exception.UserNotLoggedInException;
 import org.springframework.http.HttpStatus;
@@ -40,6 +41,17 @@ public class GlobalExceptionHandler {
                 .body(new ErrorDTO(
                         HttpStatus.BAD_REQUEST.name(),
                         ResponseMessage.NO_PERMISSION_ERROR.message,
+                        exception.getMessage()
+                ));
+    }
+
+    @ExceptionHandler(value = NotFoundException.class)
+    public ResponseEntity<ErrorDTO> handler(final NotFoundException exception) {
+        return ResponseEntity
+                .badRequest()
+                .body(new ErrorDTO(
+                        HttpStatus.BAD_REQUEST.name(),
+                        ResponseMessage.NOT_FOUND_ERROR.message,
                         exception.getMessage()
                 ));
     }

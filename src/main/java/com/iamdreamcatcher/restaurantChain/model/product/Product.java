@@ -26,7 +26,7 @@ public class Product {
     private Double price;
     @ManyToOne(fetch = FetchType.EAGER)
     private Restaurant restaurant;
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.EAGER)
     private List<Ingredient> ingredients = new ArrayList<>();
 
     public Product(String name, String description, Double price, Restaurant restaurant, List<Ingredient> ingredients) {

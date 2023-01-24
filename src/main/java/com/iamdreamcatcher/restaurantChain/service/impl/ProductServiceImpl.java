@@ -4,13 +4,16 @@ import com.iamdreamcatcher.restaurantChain.dto.model.IngredientDTO;
 import com.iamdreamcatcher.restaurantChain.dto.model.ProductDTO;
 import com.iamdreamcatcher.restaurantChain.dto.request.ProductRequestDTO;
 import com.iamdreamcatcher.restaurantChain.exception.NoPermissionException;
+import com.iamdreamcatcher.restaurantChain.exception.NotFoundException;
 import com.iamdreamcatcher.restaurantChain.exception.UserNotLoggedInException;
 import com.iamdreamcatcher.restaurantChain.mapper.ProductMapper;
+import com.iamdreamcatcher.restaurantChain.model.administrator.Administrator;
 import com.iamdreamcatcher.restaurantChain.model.ingredient.Ingredient;
 import com.iamdreamcatcher.restaurantChain.model.product.Product;
 import com.iamdreamcatcher.restaurantChain.model.restaurant.Restaurant;
 import com.iamdreamcatcher.restaurantChain.model.user.Role;
 import com.iamdreamcatcher.restaurantChain.model.user.User;
+import com.iamdreamcatcher.restaurantChain.repository.AdministratorRepository;
 import com.iamdreamcatcher.restaurantChain.repository.IngredientRepository;
 import com.iamdreamcatcher.restaurantChain.repository.ProductRepository;
 import com.iamdreamcatcher.restaurantChain.security.AuthContextHandler;
@@ -31,21 +34,29 @@ public class ProductServiceImpl implements ProductService {
     private final AuthContextHandler authContextHandler;
     private final IngredientRepository ingredientRepository;
 
+    private final AdministratorRepository administratorRepository;
+
     @Override
-    public Iterable<ProductDTO> getAdminProducts() throws NoPermissionException, UserNotLoggedInException {
+    public Iterable<ProductDTO> getRestaurantProducts() throws NoPermissionException, UserNotLoggedInException {
         Restaurant restaurant = restaurantService.getAdminRestaurant();
 
         return productMapper.toProductDTOList(productRepository.findProductsByRestaurant(restaurant));
     }
 
     @Override
-    public ProductDTO getAdminProductById(Long id) throws UserNotLoggedInException, NoPermissionException {
+    public ProductDTO getProductById(Long id) throws UserNotLoggedInException, NoPermissionException, NotFoundException {
         User user = authContextHandler.getLoggedInUser();
         if (user.getRole() != Role.ADMIN) {
             throw new NoPermissionException("User is not admin");
         }
+        Administrator administrator = administratorRepository.findByUser(user);
         Product product = productRepository.findProductById(id);
-
+        if (product == null) {
+            throw new NotFoundException("Product not found");
+        }
+        if (administrator.getRestaurant().getId() != product.getRestaurant().getId()) {
+            throw new NoPermissionException("That product doesn't suit to this admin");
+        }
         return productMapper.toProductDTO(product);
     }
 
@@ -60,10 +71,14 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public ProductDTO updateProduct(Long id, ProductRequestDTO productDTO) throws UserNotLoggedInException, NoPermissionException {
+    public ProductDTO updateProduct(Long id, ProductRequestDTO productDTO) throws UserNotLoggedInException, NoPermissionException, NotFoundException {
         Restaurant restaurant = restaurantService.getAdminRestaurant();
         Product product = productRepository.findProductById(id);
-        if (product.getRestaurant() != restaurant) {
+        if (product == null) {
+            throw new NotFoundException("Product not found");
+        }
+
+        if (product.getRestaurant().getId() != restaurant.getId()) {
             throw new NoPermissionException("Admin have no permissions to change this product");
         }
         if (productDTO.name() != null) {
@@ -84,10 +99,13 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public void deleteProductById(Long id) throws UserNotLoggedInException, NoPermissionException {
+    public void deleteProductById(Long id) throws UserNotLoggedInException, NoPermissionException, NotFoundException {
         Restaurant restaurant = restaurantService.getAdminRestaurant();
         Product product = productRepository.findProductById(id);
-        if (product.getRestaurant() != restaurant) {
+        if (product == null) {
+            throw new NotFoundException("Product not found");
+        }
+        if (product.getRestaurant().getId() != restaurant.getId()) {
             throw new NoPermissionException("Admin have no permissions to delete this product");
         }
 
