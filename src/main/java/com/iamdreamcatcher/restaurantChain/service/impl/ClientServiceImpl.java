@@ -79,8 +79,8 @@ public class ClientServiceImpl implements ClientService {
         List<Order> orders = orderRepository.findOrdersByAdministrator(administrator);
         Client client = null;
         for(Order order: orders) {
-            if (order.getClient().getId() == id) {
-                client = order.getClient();
+            if (order.getCart().getClient().getId() == id) {
+                client = order.getCart().getClient();
             }
         }
         if (client == null) {

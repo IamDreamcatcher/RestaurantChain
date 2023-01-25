@@ -21,6 +21,5 @@ public class AuthenticationController {
     public ResponseEntity<?> register(@RequestBody ClientRequestDTO request) throws RegistrationException {
         return ResponseEntity.ok(new RestApiResponse("user is registered", clientService.register(request)));
     }
-    //To do: possible to get a job tru get mail
-    //To do: find restaurants where getting product exists
+    //To do:add profile with possibility to change
 }

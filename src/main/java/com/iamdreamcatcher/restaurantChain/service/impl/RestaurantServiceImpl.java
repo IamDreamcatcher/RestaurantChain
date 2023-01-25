@@ -58,8 +58,8 @@ public class RestaurantServiceImpl implements RestaurantService {
         List<Order> orders = orderRepository.findOrdersByAdministrator(administrator);
         List<Client> clients = new ArrayList<>();
         for(Order order: orders) {
-            if (!clients.contains(order.getClient())) {
-                clients.add(order.getClient());
+            if (!clients.contains(order.getCart().getClient())) {
+                clients.add(order.getCart().getClient());
             }
         }
 

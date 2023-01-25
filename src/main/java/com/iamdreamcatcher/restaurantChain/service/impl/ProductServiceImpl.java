@@ -16,6 +16,7 @@ import com.iamdreamcatcher.restaurantChain.model.user.User;
 import com.iamdreamcatcher.restaurantChain.repository.AdministratorRepository;
 import com.iamdreamcatcher.restaurantChain.repository.IngredientRepository;
 import com.iamdreamcatcher.restaurantChain.repository.ProductRepository;
+import com.iamdreamcatcher.restaurantChain.repository.RestaurantRepository;
 import com.iamdreamcatcher.restaurantChain.security.AuthContextHandler;
 import com.iamdreamcatcher.restaurantChain.service.ProductService;
 import com.iamdreamcatcher.restaurantChain.service.RestaurantService;
@@ -35,16 +36,17 @@ public class ProductServiceImpl implements ProductService {
     private final IngredientRepository ingredientRepository;
 
     private final AdministratorRepository administratorRepository;
+    private final RestaurantRepository restaurantRepository;
 
     @Override
-    public Iterable<ProductDTO> getRestaurantProducts() throws NoPermissionException, UserNotLoggedInException {
+    public Iterable<ProductDTO> getRestaurantProductsForAdmin() throws NoPermissionException, UserNotLoggedInException {
         Restaurant restaurant = restaurantService.getAdminRestaurant();
 
         return productMapper.toProductDTOList(productRepository.findProductsByRestaurant(restaurant));
     }
 
     @Override
-    public ProductDTO getProductById(Long id) throws UserNotLoggedInException, NoPermissionException, NotFoundException {
+    public ProductDTO getProductByIdForAdmin(Long id) throws UserNotLoggedInException, NoPermissionException, NotFoundException {
         User user = authContextHandler.getLoggedInUser();
         if (user.getRole() != Role.ADMIN) {
             throw new NoPermissionException("User is not admin");
@@ -110,6 +112,29 @@ public class ProductServiceImpl implements ProductService {
         }
 
         productRepository.deleteById(id);
+    }
+
+    @Override
+    public Iterable<ProductDTO> getRestaurantProductsForClient(Long id) throws NotFoundException {
+        Restaurant restaurant = restaurantRepository.findRestaurantById(id);
+        if (restaurant == null) {
+            throw new NotFoundException("Restaurant with such id not found");
+        }
+        return productMapper.toProductDTOList(productRepository.findProductsByRestaurant(restaurant));
+    }
+
+    @Override
+    public ProductDTO getProductByIdForClient(Long id, Long pId) throws NotFoundException {
+        Restaurant restaurant = restaurantRepository.findRestaurantById(id);
+        if (restaurant == null) {
+            throw new NotFoundException("Restaurant with such id not found");
+        }
+        Product product = productRepository.findProductById(pId);
+        if (product.getRestaurant().getId() != restaurant.getId()) {
+            throw new NotFoundException("This product doesn't belong to restaurant");
+        }
+
+        return productMapper.toProductDTO(product);
     }
 
     private List<Ingredient> getIngredientsListFromRequest(ProductRequestDTO productDTO) {

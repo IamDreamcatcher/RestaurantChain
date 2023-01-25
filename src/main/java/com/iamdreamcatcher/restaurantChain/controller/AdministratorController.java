@@ -29,12 +29,12 @@ public class AdministratorController {
 
     @GetMapping("/products")
     public ResponseEntity<?> getAdminProducts() throws NoPermissionException, UserNotLoggedInException {
-        return ResponseEntity.ok(new RestApiResponse("ok", productService.getRestaurantProducts()));
+        return ResponseEntity.ok(new RestApiResponse("ok", productService.getRestaurantProductsForAdmin()));
     }
 
     @GetMapping("/products/{id}")
     public ResponseEntity<?> getAdminProducts(@PathVariable Long id) throws NoPermissionException, UserNotLoggedInException, NotFoundException {
-        return ResponseEntity.ok(new RestApiResponse("ok", productService.getProductById(id)));
+        return ResponseEntity.ok(new RestApiResponse("ok", productService.getProductByIdForAdmin(id)));
     }
 
     @PostMapping("/products/new")
