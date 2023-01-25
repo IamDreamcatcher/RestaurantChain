@@ -55,7 +55,7 @@ public class ProductServiceImpl implements ProductService {
             throw new NotFoundException("Product not found");
         }
         if (administrator.getRestaurant().getId() != product.getRestaurant().getId()) {
-            throw new NoPermissionException("That product doesn't suit to this admin");
+            throw new NoPermissionException("That product doesn't belong to this admin");
         }
         return productMapper.toProductDTO(product);
     }

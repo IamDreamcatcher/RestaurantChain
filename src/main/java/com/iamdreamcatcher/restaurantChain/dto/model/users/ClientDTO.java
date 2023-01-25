@@ -1,4 +1,4 @@
-package com.iamdreamcatcher.restaurantChain.dto.model;
+package com.iamdreamcatcher.restaurantChain.dto.model.users;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;

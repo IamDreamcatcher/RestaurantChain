@@ -1,6 +1,7 @@
-package com.iamdreamcatcher.restaurantChain.mapper;
+package com.iamdreamcatcher.restaurantChain.mapper.users;
 
-import com.iamdreamcatcher.restaurantChain.dto.model.employees.CookDTO;
+import com.iamdreamcatcher.restaurantChain.dto.model.users.CookDTO;
+import com.iamdreamcatcher.restaurantChain.mapper.RestaurantMapper;
 import com.iamdreamcatcher.restaurantChain.model.cook.Cook;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;

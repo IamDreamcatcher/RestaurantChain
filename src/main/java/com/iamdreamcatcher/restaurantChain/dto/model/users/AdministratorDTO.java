@@ -1,4 +1,4 @@
-package com.iamdreamcatcher.restaurantChain.dto.model.employees;
+package com.iamdreamcatcher.restaurantChain.dto.model.users;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -11,6 +11,7 @@ import lombok.Setter;
 import lombok.ToString;
 import lombok.experimental.Accessors;
 
+
 @Getter
 @Setter
 @Accessors(chain = true)
@@ -18,7 +19,7 @@ import lombok.experimental.Accessors;
 @ToString
 @JsonInclude(value = JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class CookDTO {
+public class AdministratorDTO {
     private Long id;
     private String email;
     private String password;

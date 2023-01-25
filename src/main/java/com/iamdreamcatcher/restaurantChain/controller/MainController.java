@@ -12,32 +12,23 @@ import com.iamdreamcatcher.restaurantChain.service.RestaurantService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/")
 @AllArgsConstructor
-public class MainPageController {
+public class MainController {
     private final RestaurantService restaurantService;
-//    private final AdministratorRepository administratorRepository;
-//    private final RestaurantRepository restaurantRepository;
-//    private final UserRepository userRepository;
+
     @GetMapping
     public ResponseEntity<?> getRestaurants() {
-//        Administrator administrator = new Administrator();
-//        User user = userRepository.findByEmail("admin@mail.ru");
-//        user.setRole(Role.ADMIN);
-//        administrator.setUser(user);
-//        administrator.setNumber("+375298549386");
-//        Restaurant restaurant = new Restaurant();
-//        restaurant.setName("aboba");
-//        restaurant.setAddress("minsk");
-//        administrator.setRestaurant(restaurant);
-//        restaurantRepository.save(restaurant);
-//        userRepository.save(user);
-//        administratorRepository.save(administrator);
         return ResponseEntity.ok(new RestApiResponse("ok", restaurantService.getRestaurants()));
+    }
+    @GetMapping("/restaurant/{id}")
+    public ResponseEntity<?> getRestaurantById(@PathVariable Long id) {
+        return ResponseEntity.ok(new RestApiResponse("ok", restaurantService.getRestaurantById(id)));
     }
     //To do:add profile with possibility to change
 }

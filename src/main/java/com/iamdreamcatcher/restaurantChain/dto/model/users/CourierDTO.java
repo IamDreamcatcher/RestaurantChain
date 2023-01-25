@@ -1,9 +1,8 @@
-package com.iamdreamcatcher.restaurantChain.dto.model.employees;
+package com.iamdreamcatcher.restaurantChain.dto.model.users;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.iamdreamcatcher.restaurantChain.dto.model.RestaurantDTO;
-import com.iamdreamcatcher.restaurantChain.model.restaurant.Restaurant;
 import com.iamdreamcatcher.restaurantChain.model.user.Role;
 import com.iamdreamcatcher.restaurantChain.model.user.Status;
 import lombok.Getter;

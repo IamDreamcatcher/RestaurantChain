@@ -10,5 +10,6 @@ import java.util.List;
 
 public interface CourierRepository extends JpaRepository<Courier, Long> {
     Courier findByUser(User user);
+    Courier findCourierById(Long id);
     List<Courier> findAllCouriersByRestaurant(Restaurant restaurant);
 }

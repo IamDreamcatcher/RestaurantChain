@@ -1,15 +1,14 @@
 package com.iamdreamcatcher.restaurantChain.service.impl;
 
-import com.iamdreamcatcher.restaurantChain.dto.model.employees.CookDTO;
+import com.iamdreamcatcher.restaurantChain.dto.model.users.CookDTO;
 import com.iamdreamcatcher.restaurantChain.dto.request.CookRequestDTO;
 import com.iamdreamcatcher.restaurantChain.exception.NoPermissionException;
 import com.iamdreamcatcher.restaurantChain.exception.NotFoundException;
 import com.iamdreamcatcher.restaurantChain.exception.RegistrationException;
 import com.iamdreamcatcher.restaurantChain.exception.UserNotLoggedInException;
-import com.iamdreamcatcher.restaurantChain.mapper.CookMapper;
+import com.iamdreamcatcher.restaurantChain.mapper.users.CookMapper;
 import com.iamdreamcatcher.restaurantChain.model.administrator.Administrator;
 import com.iamdreamcatcher.restaurantChain.model.cook.Cook;
-import com.iamdreamcatcher.restaurantChain.model.product.Product;
 import com.iamdreamcatcher.restaurantChain.model.restaurant.Restaurant;
 import com.iamdreamcatcher.restaurantChain.model.user.Role;
 import com.iamdreamcatcher.restaurantChain.model.user.Status;
@@ -99,6 +98,20 @@ public class CookServiceImpl implements CookService {
 
         cookRepository.save(cook);
         return cookMapper.toCookDto(cook);
+    }
+
+    @Override
+    public void deleteCookById(Long id) throws UserNotLoggedInException, NoPermissionException, NotFoundException {
+        Restaurant restaurant = restaurantService.getAdminRestaurant();
+        Cook cook = cookRepository.findCookById(id);
+        if (cook == null) {
+            throw new NotFoundException("Cook not found");
+        }
+        if (cook.getRestaurant().getId() != restaurant.getId()) {
+            throw new NoPermissionException("Admin have no permissions to delete this cook");
+        }
+
+        cookRepository.deleteById(id);
     }
 
     private Cook registerCook(CookRequestDTO cookRequestDTO) throws RegistrationException {

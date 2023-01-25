@@ -21,4 +21,5 @@ public class Review {
     private Order order;
 
     private String message;
+    private String administratorComment;
 }

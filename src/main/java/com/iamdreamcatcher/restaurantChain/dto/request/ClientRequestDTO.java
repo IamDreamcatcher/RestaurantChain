@@ -5,7 +5,7 @@ import com.iamdreamcatcher.restaurantChain.model.user.Status;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 
-public record ClientRegisterRequestDTO(
+public record ClientRequestDTO(
         String email,
         String password,
         String name,

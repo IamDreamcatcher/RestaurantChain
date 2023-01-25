@@ -1,6 +1,6 @@
 package com.iamdreamcatcher.restaurantChain.controller;
 
-import com.iamdreamcatcher.restaurantChain.dto.request.ClientRegisterRequestDTO;
+import com.iamdreamcatcher.restaurantChain.dto.request.ClientRequestDTO;
 import com.iamdreamcatcher.restaurantChain.dto.response.RestApiResponse;
 import com.iamdreamcatcher.restaurantChain.exception.RegistrationException;
 import com.iamdreamcatcher.restaurantChain.service.ClientService;
@@ -18,7 +18,7 @@ public class AuthenticationController {
     private final ClientService clientService;
 
     @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody ClientRegisterRequestDTO request) throws RegistrationException {
+    public ResponseEntity<?> register(@RequestBody ClientRequestDTO request) throws RegistrationException {
         return ResponseEntity.ok(new RestApiResponse("user is registered", clientService.register(request)));
     }
     //To do: possible to get a job tru get mail

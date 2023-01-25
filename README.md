@@ -1,1 +1,1 @@
-# RestaurantChain
+# Restaurant Chain
