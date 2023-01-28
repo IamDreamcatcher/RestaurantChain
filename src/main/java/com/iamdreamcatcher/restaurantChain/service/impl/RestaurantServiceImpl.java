@@ -55,7 +55,7 @@ public class RestaurantServiceImpl implements RestaurantService {
             throw new NoPermissionException("User is not admin");
         }
         Administrator administrator = administratorRepository.findByUser(user);
-        List<Order> orders = orderRepository.findOrdersByAdministrator(administrator);
+        List<Order> orders = orderRepository.findOrdersByRestaurant(administrator.getRestaurant());
         List<Client> clients = new ArrayList<>();
         for(Order order: orders) {
             if (!clients.contains(order.getCart().getClient())) {

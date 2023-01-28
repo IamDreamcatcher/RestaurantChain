@@ -7,9 +7,7 @@ import com.iamdreamcatcher.restaurantChain.exception.NotFoundException;
 import com.iamdreamcatcher.restaurantChain.exception.UserNotLoggedInException;
 import com.iamdreamcatcher.restaurantChain.mapper.ReviewMapper;
 import com.iamdreamcatcher.restaurantChain.model.administrator.Administrator;
-import com.iamdreamcatcher.restaurantChain.model.courier.Courier;
 import com.iamdreamcatcher.restaurantChain.model.order.Order;
-import com.iamdreamcatcher.restaurantChain.model.restaurant.Restaurant;
 import com.iamdreamcatcher.restaurantChain.model.reviews.Review;
 import com.iamdreamcatcher.restaurantChain.model.user.Role;
 import com.iamdreamcatcher.restaurantChain.model.user.User;
@@ -39,7 +37,7 @@ public class ReviewsServiceImpl implements ReviewsService {
             throw new NoPermissionException("User is not admin");
         }
         Administrator administrator = administratorRepository.findByUser(user);
-        List<Order> orders = orderRepository.findOrdersByAdministrator(administrator);
+        List<Order> orders = orderRepository.findOrdersByRestaurant(administrator.getRestaurant());
         List<Review> reviews = reviewsRepository.findReviewsByOrderIn(orders);
 
         return reviewMapper.toReviewDTOList(reviews);
@@ -56,7 +54,7 @@ public class ReviewsServiceImpl implements ReviewsService {
         if (review == null) {
             throw new NotFoundException("Review with this index doesn't exist");
         }
-        if (administrator.getId() != review.getOrder().getAdministrator().getId()) {
+        if (administrator.getRestaurant().getId() != review.getOrder().getRestaurant().getId()) {
             throw new NoPermissionException("This review doesn't belong to this admin");
         }
 
@@ -74,7 +72,7 @@ public class ReviewsServiceImpl implements ReviewsService {
         if (review == null) {
             throw new NotFoundException("Review with this index doesn't exist");
         }
-        if (administrator.getId() != review.getOrder().getAdministrator().getId()) {
+        if (administrator.getRestaurant().getId() != review.getOrder().getRestaurant().getId()) {
             throw new NoPermissionException("This review doesn't belong to this admin");
         }
 
@@ -93,7 +91,7 @@ public class ReviewsServiceImpl implements ReviewsService {
         if (review == null) {
             throw new NotFoundException("Review with this index doesn't exist");
         }
-        if (administrator.getId() != review.getOrder().getAdministrator().getId()) {
+        if (administrator.getRestaurant().getId() != review.getOrder().getRestaurant().getId()) {
             throw new NoPermissionException("This review doesn't belong to this admin");
         }
 

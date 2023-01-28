@@ -21,9 +21,9 @@ import lombok.experimental.Accessors;
 public class OrderDTO {
     private Long id;
     private OrderStatus orderStatus;
-    private ClientDTO clientDTO;
+    private CartDTO cartDTO;
     private CourierDTO courierDTO;
     private CookDTO cookDTO;
-    private AdministratorDTO administratorDTO;
+    private RestaurantDTO restaurantDTO;
     private Double price;
 }

@@ -76,7 +76,7 @@ public class ClientServiceImpl implements ClientService {
             throw new NoPermissionException("User is not admin");
         }
         Administrator administrator = administratorRepository.findByUser(user);
-        List<Order> orders = orderRepository.findOrdersByAdministrator(administrator);
+        List<Order> orders = orderRepository.findOrdersByRestaurant(administrator.getRestaurant());
         Client client = null;
         for(Order order: orders) {
             if (order.getCart().getClient().getId() == id) {

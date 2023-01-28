@@ -11,7 +11,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface OrderRepository extends JpaRepository<Order, Long> {
-    List<Order> findOrdersByAdministrator(Administrator administrator);
+    List<Order> findOrdersByRestaurant(Restaurant restaurant);
     List<Order> findOrdersByClient(Client client);
     List<Order> findOrdersByCourier(Courier courier);
     List<Order> findOrdersByCook(Cook cook);

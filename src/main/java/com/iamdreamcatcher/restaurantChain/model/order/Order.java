@@ -5,6 +5,7 @@ import com.iamdreamcatcher.restaurantChain.model.cart.Cart;
 import com.iamdreamcatcher.restaurantChain.model.client.Client;
 import com.iamdreamcatcher.restaurantChain.model.cook.Cook;
 import com.iamdreamcatcher.restaurantChain.model.courier.Courier;
+import com.iamdreamcatcher.restaurantChain.model.restaurant.Restaurant;
 import com.iamdreamcatcher.restaurantChain.model.user.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -29,7 +30,7 @@ public class Order {
     @ManyToOne(fetch = FetchType.EAGER)
     private Cook cook;
     @ManyToOne(fetch = FetchType.EAGER)
-    private Administrator administrator;
+    private Restaurant restaurant;
     @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "cart_id")
     private Cart cart;
