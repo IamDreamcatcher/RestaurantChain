@@ -9,12 +9,9 @@ import com.iamdreamcatcher.restaurantChain.mapper.ReviewMapper;
 import com.iamdreamcatcher.restaurantChain.model.administrator.Administrator;
 import com.iamdreamcatcher.restaurantChain.model.order.Order;
 import com.iamdreamcatcher.restaurantChain.model.reviews.Review;
-import com.iamdreamcatcher.restaurantChain.model.user.Role;
-import com.iamdreamcatcher.restaurantChain.model.user.User;
-import com.iamdreamcatcher.restaurantChain.repository.AdministratorRepository;
 import com.iamdreamcatcher.restaurantChain.repository.OrderRepository;
 import com.iamdreamcatcher.restaurantChain.repository.ReviewsRepository;
-import com.iamdreamcatcher.restaurantChain.security.AuthContextHandler;
+import com.iamdreamcatcher.restaurantChain.service.AdministratorService;
 import com.iamdreamcatcher.restaurantChain.service.ReviewsService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -25,18 +22,13 @@ import java.util.List;
 @AllArgsConstructor
 public class ReviewsServiceImpl implements ReviewsService {
     private final ReviewsRepository reviewsRepository;
-    private final AuthContextHandler authContextHandler;
     private final OrderRepository orderRepository;
-    private final AdministratorRepository administratorRepository;
+    private final AdministratorService administratorService;
     private final ReviewMapper reviewMapper;
 
     @Override
     public List<ReviewDTO> getRestaurantReviews() throws UserNotLoggedInException, NoPermissionException {
-        User user = authContextHandler.getLoggedInUser();
-        if (user.getRole() != Role.ADMIN) {
-            throw new NoPermissionException("User is not admin");
-        }
-        Administrator administrator = administratorRepository.findByUser(user);
+        Administrator administrator = administratorService.getAdmin();;
         List<Order> orders = orderRepository.findOrdersByRestaurant(administrator.getRestaurant());
         List<Review> reviews = reviewsRepository.findReviewsByOrderIn(orders);
 
@@ -45,11 +37,7 @@ public class ReviewsServiceImpl implements ReviewsService {
 
     @Override
     public ReviewDTO getReviewById(Long id) throws UserNotLoggedInException, NoPermissionException, NotFoundException {
-        User user = authContextHandler.getLoggedInUser();
-        if (user.getRole() != Role.ADMIN) {
-            throw new NoPermissionException("User is not admin");
-        }
-        Administrator administrator = administratorRepository.findByUser(user);
+        Administrator administrator = administratorService.getAdmin();;;
         Review review = reviewsRepository.findReviewById(id);
         if (review == null) {
             throw new NotFoundException("Review with this index doesn't exist");
@@ -63,11 +51,7 @@ public class ReviewsServiceImpl implements ReviewsService {
 
     @Override
     public ReviewDTO leaveComment(Long id, ReviewRequestDto reviewRequestDto) throws UserNotLoggedInException, NoPermissionException, NotFoundException {
-        User user = authContextHandler.getLoggedInUser();
-        if (user.getRole() != Role.ADMIN) {
-            throw new NoPermissionException("User is not admin");
-        }
-        Administrator administrator = administratorRepository.findByUser(user);
+        Administrator administrator = administratorService.getAdmin();;
         Review review = reviewsRepository.findReviewById(id);
         if (review == null) {
             throw new NotFoundException("Review with this index doesn't exist");
@@ -82,11 +66,7 @@ public class ReviewsServiceImpl implements ReviewsService {
 
     @Override
     public void deleteReviewById(Long id) throws NoPermissionException, UserNotLoggedInException, NotFoundException {
-        User user = authContextHandler.getLoggedInUser();
-        if (user.getRole() != Role.ADMIN) {
-            throw new NoPermissionException("User is not admin");
-        }
-        Administrator administrator = administratorRepository.findByUser(user);
+        Administrator administrator = administratorService.getAdmin();
         Review review = reviewsRepository.findReviewById(id);
         if (review == null) {
             throw new NotFoundException("Review with this index doesn't exist");

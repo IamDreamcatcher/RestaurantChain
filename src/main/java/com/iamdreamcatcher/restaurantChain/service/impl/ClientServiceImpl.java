@@ -25,7 +25,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.util.StringUtils;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -38,6 +37,17 @@ public class ClientServiceImpl implements ClientService {
     private final AuthContextHandler authContextHandler;
     private final AdministratorRepository administratorRepository;
     private final OrderRepository orderRepository;
+
+    @Override
+    public Client getClient() throws UserNotLoggedInException, NoPermissionException {
+        User user = authContextHandler.getLoggedInUser();
+        Client client = clientRepository.findByUser(user);
+        if (client == null) {
+            throw new NoPermissionException("User is not a client");
+        }
+
+        return client;
+    }
 
     @Override
     public ClientDTO register(ClientRequestDTO request) throws RegistrationException {

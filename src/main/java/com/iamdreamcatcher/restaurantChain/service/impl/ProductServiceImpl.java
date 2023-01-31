@@ -11,13 +11,10 @@ import com.iamdreamcatcher.restaurantChain.model.administrator.Administrator;
 import com.iamdreamcatcher.restaurantChain.model.ingredient.Ingredient;
 import com.iamdreamcatcher.restaurantChain.model.product.Product;
 import com.iamdreamcatcher.restaurantChain.model.restaurant.Restaurant;
-import com.iamdreamcatcher.restaurantChain.model.user.Role;
-import com.iamdreamcatcher.restaurantChain.model.user.User;
-import com.iamdreamcatcher.restaurantChain.repository.AdministratorRepository;
 import com.iamdreamcatcher.restaurantChain.repository.IngredientRepository;
 import com.iamdreamcatcher.restaurantChain.repository.ProductRepository;
 import com.iamdreamcatcher.restaurantChain.repository.RestaurantRepository;
-import com.iamdreamcatcher.restaurantChain.security.AuthContextHandler;
+import com.iamdreamcatcher.restaurantChain.service.AdministratorService;
 import com.iamdreamcatcher.restaurantChain.service.ProductService;
 import com.iamdreamcatcher.restaurantChain.service.RestaurantService;
 import lombok.AllArgsConstructor;
@@ -32,10 +29,8 @@ public class ProductServiceImpl implements ProductService {
     private final ProductMapper productMapper;
     private final RestaurantService restaurantService;
     private final ProductRepository productRepository;
-    private final AuthContextHandler authContextHandler;
     private final IngredientRepository ingredientRepository;
-
-    private final AdministratorRepository administratorRepository;
+    private final AdministratorService administratorService;
     private final RestaurantRepository restaurantRepository;
 
     @Override
@@ -47,11 +42,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public ProductDTO getProductByIdForAdmin(Long id) throws UserNotLoggedInException, NoPermissionException, NotFoundException {
-        User user = authContextHandler.getLoggedInUser();
-        if (user.getRole() != Role.ADMIN) {
-            throw new NoPermissionException("User is not admin");
-        }
-        Administrator administrator = administratorRepository.findByUser(user);
+        Administrator administrator = administratorService.getAdmin();
         Product product = productRepository.findProductById(id);
         if (product == null) {
             throw new NotFoundException("Product not found");

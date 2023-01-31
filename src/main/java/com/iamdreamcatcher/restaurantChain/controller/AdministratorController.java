@@ -6,6 +6,7 @@ import com.iamdreamcatcher.restaurantChain.exception.NoPermissionException;
 import com.iamdreamcatcher.restaurantChain.exception.NotFoundException;
 import com.iamdreamcatcher.restaurantChain.exception.RegistrationException;
 import com.iamdreamcatcher.restaurantChain.exception.UserNotLoggedInException;
+import com.iamdreamcatcher.restaurantChain.model.order.OrderStatus;
 import com.iamdreamcatcher.restaurantChain.service.*;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -21,6 +22,7 @@ public class AdministratorController {
     private final CourierService courierService;
     private final ReviewsService reviewsService;
     private final ClientService clientService;
+    private final OrderService orderService;
 
     @GetMapping()
     public ResponseEntity<?> getAdminRestaurant() throws UserNotLoggedInException, NoPermissionException {
@@ -147,5 +149,21 @@ public class AdministratorController {
         return ResponseEntity.ok(new RestApiResponse(
                 "a client with id = %d has been updated with new status".formatted(id),
                 clientService.changeClientAccountStatus(id, clientRequestDTO)));
+    }
+
+    @GetMapping("/orders")
+    public ResponseEntity<?> getOrdersForAdmin() throws UserNotLoggedInException, NoPermissionException {
+        return ResponseEntity.ok(new RestApiResponse("ok", orderService.getOrdersForAdmin()));
+    }
+
+    @GetMapping("/orders/{id}")
+    public ResponseEntity<?> getOrderForAdmin(@PathVariable Long id) throws UserNotLoggedInException, NotFoundException, NoPermissionException {
+        return ResponseEntity.ok(new RestApiResponse("ok", orderService.getOrderForAdmin(id)));
+    }
+
+    @GetMapping("/orders/{id}/change-status")
+    public ResponseEntity<?> changeOrderStatus(@PathVariable Long id, @RequestBody OrderStatus orderStatus) throws UserNotLoggedInException, NotFoundException, NoPermissionException {
+        orderService.changeOrderStatus(id, orderStatus);
+        return ResponseEntity.ok(new RestApiResponse("an order with id = %d has been updated with new status".formatted(id)));
     }
 }

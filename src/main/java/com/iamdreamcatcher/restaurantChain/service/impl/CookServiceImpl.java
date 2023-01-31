@@ -13,10 +13,9 @@ import com.iamdreamcatcher.restaurantChain.model.restaurant.Restaurant;
 import com.iamdreamcatcher.restaurantChain.model.user.Role;
 import com.iamdreamcatcher.restaurantChain.model.user.Status;
 import com.iamdreamcatcher.restaurantChain.model.user.User;
-import com.iamdreamcatcher.restaurantChain.repository.AdministratorRepository;
 import com.iamdreamcatcher.restaurantChain.repository.CookRepository;
 import com.iamdreamcatcher.restaurantChain.repository.UserRepository;
-import com.iamdreamcatcher.restaurantChain.security.AuthContextHandler;
+import com.iamdreamcatcher.restaurantChain.service.AdministratorService;
 import com.iamdreamcatcher.restaurantChain.service.CookService;
 import com.iamdreamcatcher.restaurantChain.service.RestaurantService;
 import lombok.AllArgsConstructor;
@@ -33,8 +32,7 @@ public class CookServiceImpl implements CookService {
     private final RestaurantService restaurantService;
     private final CookRepository cookRepository;
     private final CookMapper cookMapper;
-    private final AuthContextHandler authContextHandler;
-    private final AdministratorRepository administratorRepository;
+    private final AdministratorService administratorService;
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder passwordEncoder;
 
@@ -48,11 +46,7 @@ public class CookServiceImpl implements CookService {
 
     @Override
     public CookDTO getCookById(Long id) throws UserNotLoggedInException, NoPermissionException, NotFoundException {
-        User user = authContextHandler.getLoggedInUser();
-        if (user.getRole() != Role.ADMIN) {
-            throw new NoPermissionException("User is not admin");
-        }
-        Administrator administrator = administratorRepository.findByUser(user);
+        Administrator administrator = administratorService.getAdmin();
         Cook cook = cookRepository.findCookById(id);
         if (cook == null) {
             throw new NotFoundException("Cook not found");

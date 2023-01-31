@@ -16,6 +16,7 @@ import com.iamdreamcatcher.restaurantChain.repository.AdministratorRepository;
 import com.iamdreamcatcher.restaurantChain.repository.OrderRepository;
 import com.iamdreamcatcher.restaurantChain.repository.RestaurantRepository;
 import com.iamdreamcatcher.restaurantChain.security.AuthContextHandler;
+import com.iamdreamcatcher.restaurantChain.service.AdministratorService;
 import com.iamdreamcatcher.restaurantChain.service.RestaurantService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -27,8 +28,7 @@ import java.util.List;
 @AllArgsConstructor
 public class RestaurantServiceImpl implements RestaurantService {
     private final RestaurantRepository restaurantRepository;
-    private final AdministratorRepository administratorRepository;
-    private final AuthContextHandler authContextHandler;
+    private final AdministratorService administratorService;
     private final RestaurantMapper restaurantMapper;
     private final OrderRepository orderRepository;
     private final ClientMapper clientMapper;
@@ -40,21 +40,13 @@ public class RestaurantServiceImpl implements RestaurantService {
 
     @Override
     public Restaurant getAdminRestaurant() throws UserNotLoggedInException, NoPermissionException {
-        User user = authContextHandler.getLoggedInUser();
-        if (user.getRole() != Role.ADMIN) {
-            throw new NoPermissionException("User is not admin");
-        }
-        Administrator administrator = administratorRepository.findByUser(user);
+        Administrator administrator = administratorService.getAdmin();
         return administrator.getRestaurant();
     }
 
     @Override
     public Iterable<ClientDTO> getRestaurantClients() throws UserNotLoggedInException, NoPermissionException {
-        User user = authContextHandler.getLoggedInUser();
-        if (user.getRole() != Role.ADMIN) {
-            throw new NoPermissionException("User is not admin");
-        }
-        Administrator administrator = administratorRepository.findByUser(user);
+        Administrator administrator = administratorService.getAdmin();
         List<Order> orders = orderRepository.findOrdersByRestaurant(administrator.getRestaurant());
         List<Client> clients = new ArrayList<>();
         for(Order order: orders) {

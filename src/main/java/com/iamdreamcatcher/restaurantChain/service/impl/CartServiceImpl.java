@@ -2,6 +2,7 @@ package com.iamdreamcatcher.restaurantChain.service.impl;
 
 import com.iamdreamcatcher.restaurantChain.dto.model.CartDTO;
 import com.iamdreamcatcher.restaurantChain.dto.model.CartItemDTO;
+import com.iamdreamcatcher.restaurantChain.exception.NoPermissionException;
 import com.iamdreamcatcher.restaurantChain.exception.NotFoundException;
 import com.iamdreamcatcher.restaurantChain.exception.UserNotLoggedInException;
 import com.iamdreamcatcher.restaurantChain.mapper.CartMapper;
@@ -13,10 +14,9 @@ import com.iamdreamcatcher.restaurantChain.model.order.Order;
 import com.iamdreamcatcher.restaurantChain.model.order.OrderStatus;
 import com.iamdreamcatcher.restaurantChain.model.product.Product;
 import com.iamdreamcatcher.restaurantChain.model.restaurant.Restaurant;
-import com.iamdreamcatcher.restaurantChain.model.user.User;
 import com.iamdreamcatcher.restaurantChain.repository.*;
-import com.iamdreamcatcher.restaurantChain.security.AuthContextHandler;
 import com.iamdreamcatcher.restaurantChain.service.CartService;
+import com.iamdreamcatcher.restaurantChain.service.ClientService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -26,20 +26,22 @@ public class CartServiceImpl implements CartService {
     private final RestaurantRepository restaurantRepository;
     private final ProductRepository productRepository;
     private final CartRepository cartRepository;
-    private final ClientRepository clientRepository;
-    private final AuthContextHandler authContextHandler;
+    private final ClientService clientService;
     private final CartItemRepository cartItemRepository;
     private final CartMapper cartMapper;
     private final OrderRepository orderRepository;
     @Override
-    public void addProductToShoppingCart(Long id, Long pId, CartItemDTO cartItemDTO) throws NotFoundException, UserNotLoggedInException {
+    public void addProductToShoppingCart(Long id, Long pId, CartItemDTO cartItemDTO) throws NotFoundException, UserNotLoggedInException, NoPermissionException {
         Cart cart = getCart();
         if(cart == null) {
             cart = new Cart();
             cart.setCartStatus(CartStatus.ACTIVE);
-            cart.setClient(getClient());
+            cart.setClient(clientService.getClient());
         }
-
+        if (!cart.getCartItems().isEmpty() &&
+                cart.getCartItems().get(0).getProduct().getRestaurant().getId() != getRestaurant(id).getId()) {
+            throw new NoPermissionException("Products from order must be from the same restaurant.");
+        }
         for(int i = 0; i < cart.getCartItems().size(); i++) {
             CartItem cartItem = cart.getCartItems().get(i);
             if (cartItem.getProduct().getId() == cartItemDTO.getProductDTO().getId()) {
@@ -63,7 +65,7 @@ public class CartServiceImpl implements CartService {
 
 
     @Override
-    public void removeProductFromShoppingCart(Long id, Long pId, CartItemDTO cartItemDTO) throws NotFoundException, UserNotLoggedInException {
+    public void removeProductFromShoppingCart(Long id, Long pId, CartItemDTO cartItemDTO) throws NotFoundException, UserNotLoggedInException, NoPermissionException {
         Cart cart = getCart();
 
         for(int i = 0; i < cart.getCartItems().size(); i++) {
@@ -91,19 +93,19 @@ public class CartServiceImpl implements CartService {
     }
 
     @Override
-    public CartDTO getShoppingCart() throws UserNotLoggedInException, NotFoundException {
+    public CartDTO getShoppingCart() throws UserNotLoggedInException, NoPermissionException {
         return cartMapper.toCartDTO(getCart());
     }
 
     @Override
-    public void clearShoppingCart() throws UserNotLoggedInException, NotFoundException {
+    public void clearShoppingCart() throws UserNotLoggedInException, NoPermissionException {
         Cart cart = getCart();
         cart.getCartItems().clear();
         cartRepository.save(cart);
     }
 
     @Override
-    public void checkout() throws UserNotLoggedInException, NotFoundException {
+    public void checkout() throws UserNotLoggedInException, NotFoundException, NoPermissionException {
         Cart cart = getCart();
         if (cart.getCartItems().isEmpty()) {
             throw new NotFoundException("Cart is empty");
@@ -111,7 +113,7 @@ public class CartServiceImpl implements CartService {
         cart.setCartStatus(CartStatus.INACTIVE);
         Order order = new Order();
         order.setCart(cart);
-        order.setOrderStatus(OrderStatus.ACCEPTED);
+        order.setOrderStatus(OrderStatus.FORMED);
         order.setPrice(getPriceOfCart(cart));
 
         Restaurant restaurant = cart.getCartItems().get(0).getProduct().getRestaurant();
@@ -129,19 +131,9 @@ public class CartServiceImpl implements CartService {
         return price;
     }
 
-    private Cart getCart() throws NotFoundException, UserNotLoggedInException {
-        Client client = getClient();
+    private Cart getCart() throws UserNotLoggedInException, NoPermissionException {
+        Client client = clientService.getClient();
         return cartRepository.findFirstCartByClientAndCartStatus(client, CartStatus.ACTIVE);
-    }
-
-    private Client getClient() throws UserNotLoggedInException, NotFoundException {
-        User user = authContextHandler.getLoggedInUser();
-        Client client = clientRepository.findByUser(user);
-        if (client == null) {
-            throw new NotFoundException("User is not a client");
-        }
-
-        return client;
     }
 
     private Product getProduct(Long pId, Restaurant restaurant) throws NotFoundException {
