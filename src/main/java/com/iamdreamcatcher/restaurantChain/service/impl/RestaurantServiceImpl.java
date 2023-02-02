@@ -10,12 +10,8 @@ import com.iamdreamcatcher.restaurantChain.model.administrator.Administrator;
 import com.iamdreamcatcher.restaurantChain.model.client.Client;
 import com.iamdreamcatcher.restaurantChain.model.order.Order;
 import com.iamdreamcatcher.restaurantChain.model.restaurant.Restaurant;
-import com.iamdreamcatcher.restaurantChain.model.user.Role;
-import com.iamdreamcatcher.restaurantChain.model.user.User;
-import com.iamdreamcatcher.restaurantChain.repository.AdministratorRepository;
 import com.iamdreamcatcher.restaurantChain.repository.OrderRepository;
 import com.iamdreamcatcher.restaurantChain.repository.RestaurantRepository;
-import com.iamdreamcatcher.restaurantChain.security.AuthContextHandler;
 import com.iamdreamcatcher.restaurantChain.service.AdministratorService;
 import com.iamdreamcatcher.restaurantChain.service.RestaurantService;
 import lombok.AllArgsConstructor;
@@ -49,7 +45,7 @@ public class RestaurantServiceImpl implements RestaurantService {
         Administrator administrator = administratorService.getAdmin();
         List<Order> orders = orderRepository.findOrdersByRestaurant(administrator.getRestaurant());
         List<Client> clients = new ArrayList<>();
-        for(Order order: orders) {
+        for (Order order : orders) {
             if (!clients.contains(order.getCart().getClient())) {
                 clients.add(order.getCart().getClient());
             }

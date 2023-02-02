@@ -6,6 +6,7 @@ import com.iamdreamcatcher.restaurantChain.exception.NoPermissionException;
 import com.iamdreamcatcher.restaurantChain.exception.NotFoundException;
 import com.iamdreamcatcher.restaurantChain.exception.RegistrationException;
 import com.iamdreamcatcher.restaurantChain.exception.UserNotLoggedInException;
+import com.iamdreamcatcher.restaurantChain.model.courier.Courier;
 
 public interface CourierService {
     Iterable<CourierDTO>getRestaurantCouriers() throws UserNotLoggedInException, NoPermissionException;
@@ -17,4 +18,6 @@ public interface CourierService {
     CourierDTO updateCourierAccount(Long id, CourierRequestDTO courierRequestDTO) throws UserNotLoggedInException, NoPermissionException, NotFoundException;
 
     void deleteCourierById(Long id) throws UserNotLoggedInException, NoPermissionException, NotFoundException;
+
+    Courier getCourier() throws NoPermissionException, UserNotLoggedInException;
 }

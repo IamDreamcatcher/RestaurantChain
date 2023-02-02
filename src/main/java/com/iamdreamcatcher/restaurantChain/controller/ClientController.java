@@ -1,14 +1,12 @@
 package com.iamdreamcatcher.restaurantChain.controller;
 
 import com.iamdreamcatcher.restaurantChain.dto.model.CartItemDTO;
+import com.iamdreamcatcher.restaurantChain.dto.model.ReviewDTO;
 import com.iamdreamcatcher.restaurantChain.dto.response.RestApiResponse;
 import com.iamdreamcatcher.restaurantChain.exception.NoPermissionException;
 import com.iamdreamcatcher.restaurantChain.exception.NotFoundException;
 import com.iamdreamcatcher.restaurantChain.exception.UserNotLoggedInException;
-import com.iamdreamcatcher.restaurantChain.service.CartService;
-import com.iamdreamcatcher.restaurantChain.service.OrderService;
-import com.iamdreamcatcher.restaurantChain.service.ProductService;
-import com.iamdreamcatcher.restaurantChain.service.RestaurantService;
+import com.iamdreamcatcher.restaurantChain.service.*;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,6 +19,7 @@ public class ClientController {
     private final ProductService productService;
     private final CartService cartService;
     private final OrderService orderService;
+    private final ReviewsService reviewsService;
 
     @GetMapping
     public ResponseEntity<?> getRestaurants() {
@@ -81,6 +80,12 @@ public class ClientController {
     @GetMapping("/orders/{id}")
     public ResponseEntity<?> getOrderForClient(@PathVariable Long id) throws UserNotLoggedInException, NotFoundException, NoPermissionException {
         return ResponseEntity.ok(new RestApiResponse("ok", orderService.getOrderForClient(id)));
+    }
+
+    @PostMapping("/orders/{id}/review")
+    public ResponseEntity<?> leaveReview(@PathVariable Long id, @RequestBody ReviewDTO reviewDTO) throws UserNotLoggedInException, NotFoundException, NoPermissionException {
+        reviewsService.leaveReview(id, reviewDTO);
+        return ResponseEntity.ok(new RestApiResponse("Review was left"));
     }
 
     //To do: possible to get a job tru get mail

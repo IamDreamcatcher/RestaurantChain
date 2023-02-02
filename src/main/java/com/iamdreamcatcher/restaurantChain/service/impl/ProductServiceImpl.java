@@ -47,7 +47,7 @@ public class ProductServiceImpl implements ProductService {
         if (product == null) {
             throw new NotFoundException("Product not found");
         }
-        if (administrator.getRestaurant().getId() != product.getRestaurant().getId()) {
+        if (!administrator.getRestaurant().equals(product.getRestaurant())) {
             throw new NoPermissionException("That product doesn't belong to this admin");
         }
         return productMapper.toProductDTO(product);
@@ -71,7 +71,7 @@ public class ProductServiceImpl implements ProductService {
             throw new NotFoundException("Product not found");
         }
 
-        if (product.getRestaurant().getId() != restaurant.getId()) {
+        if (!product.getRestaurant().equals(restaurant)) {
             throw new NoPermissionException("Admin have no permissions to change this product");
         }
         if (productDTO.name() != null) {
@@ -98,7 +98,7 @@ public class ProductServiceImpl implements ProductService {
         if (product == null) {
             throw new NotFoundException("Product not found");
         }
-        if (product.getRestaurant().getId() != restaurant.getId()) {
+        if (!product.getRestaurant().equals(restaurant)) {
             throw new NoPermissionException("Admin have no permissions to delete this product");
         }
 
@@ -121,7 +121,7 @@ public class ProductServiceImpl implements ProductService {
             throw new NotFoundException("Restaurant with such id not found");
         }
         Product product = productRepository.findProductById(pId);
-        if (product.getRestaurant().getId() != restaurant.getId()) {
+        if (!product.getRestaurant().equals(restaurant)) {
             throw new NotFoundException("This product doesn't belong to restaurant");
         }
 

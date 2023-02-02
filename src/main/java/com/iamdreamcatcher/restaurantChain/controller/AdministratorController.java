@@ -126,7 +126,7 @@ public class AdministratorController {
     }
 
     @PutMapping("/reviews/{id}")
-    public ResponseEntity<?> leaveComment(@PathVariable Long id, @RequestBody ReviewRequestDto reviewRequestDto) throws UserNotLoggedInException, NoPermissionException, NotFoundException {
+    public ResponseEntity<?> leaveComment(@PathVariable Long id, @RequestBody ReviewRequestDTO reviewRequestDto) throws UserNotLoggedInException, NoPermissionException, NotFoundException {
         return ResponseEntity.ok(new RestApiResponse(
                 "a review with id = %d has been updated with comment".formatted(id),
                 reviewsService.leaveComment(id, reviewRequestDto)));
@@ -161,7 +161,7 @@ public class AdministratorController {
         return ResponseEntity.ok(new RestApiResponse("ok", orderService.getOrderForAdmin(id)));
     }
 
-    @GetMapping("/orders/{id}/change-status")
+    @PostMapping("/orders/{id}/change-status")
     public ResponseEntity<?> changeOrderStatus(@PathVariable Long id, @RequestBody OrderStatus orderStatus) throws UserNotLoggedInException, NotFoundException, NoPermissionException {
         orderService.changeOrderStatus(id, orderStatus);
         return ResponseEntity.ok(new RestApiResponse("an order with id = %d has been updated with new status".formatted(id)));

@@ -16,4 +16,20 @@ public interface OrderService {
     OrderDTO getOrderForAdmin(Long id) throws UserNotLoggedInException, NoPermissionException, NotFoundException;
 
     void changeOrderStatus(Long id, OrderStatus orderStatus) throws UserNotLoggedInException, NoPermissionException, NotFoundException;
+
+    Iterable<OrderDTO>  getOrdersForCook() throws UserNotLoggedInException, NoPermissionException;
+
+    OrderDTO getOrderForCook(Long id) throws UserNotLoggedInException, NoPermissionException, NotFoundException;
+
+    void startCooking(Long id) throws UserNotLoggedInException, NoPermissionException, NotFoundException;
+
+    void finishingCooking(Long id) throws UserNotLoggedInException, NoPermissionException, NotFoundException;
+
+    Iterable<OrderDTO>  getOrdersForCourier() throws UserNotLoggedInException, NoPermissionException;
+
+    OrderDTO getOrderForCourier(Long id) throws UserNotLoggedInException, NoPermissionException, NotFoundException;
+
+    void delivered(Long id) throws UserNotLoggedInException, NoPermissionException, NotFoundException;
+
+    void completed(Long id) throws UserNotLoggedInException, NoPermissionException, NotFoundException;
 }

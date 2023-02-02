@@ -8,6 +8,7 @@ import com.iamdreamcatcher.restaurantChain.exception.RegistrationException;
 import com.iamdreamcatcher.restaurantChain.exception.UserNotLoggedInException;
 import com.iamdreamcatcher.restaurantChain.mapper.users.CourierMapper;
 import com.iamdreamcatcher.restaurantChain.model.administrator.Administrator;
+import com.iamdreamcatcher.restaurantChain.model.cook.Cook;
 import com.iamdreamcatcher.restaurantChain.model.courier.Courier;
 import com.iamdreamcatcher.restaurantChain.model.restaurant.Restaurant;
 import com.iamdreamcatcher.restaurantChain.model.user.Role;
@@ -15,6 +16,7 @@ import com.iamdreamcatcher.restaurantChain.model.user.Status;
 import com.iamdreamcatcher.restaurantChain.model.user.User;
 import com.iamdreamcatcher.restaurantChain.repository.CourierRepository;
 import com.iamdreamcatcher.restaurantChain.repository.UserRepository;
+import com.iamdreamcatcher.restaurantChain.security.AuthContextHandler;
 import com.iamdreamcatcher.restaurantChain.service.AdministratorService;
 import com.iamdreamcatcher.restaurantChain.service.CourierService;
 import com.iamdreamcatcher.restaurantChain.service.RestaurantService;
@@ -35,6 +37,7 @@ public class CourierServiceImpl implements CourierService {
     private final AdministratorService administratorService;
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder passwordEncoder;
+    private final AuthContextHandler authContextHandler;
 
     @Override
     public List<CourierDTO> getRestaurantCouriers() throws UserNotLoggedInException, NoPermissionException {
@@ -51,7 +54,7 @@ public class CourierServiceImpl implements CourierService {
         if (courier == null) {
             throw new NotFoundException("Courier not found");
         }
-        if (administrator.getRestaurant().getId() != courier.getRestaurant().getId()) {
+        if (!administrator.getRestaurant().equals(courier.getRestaurant())) {
             throw new NoPermissionException("That courier doesn't belong to this admin");
         }
         return courierMapper.toCourierDto(courier);
@@ -75,7 +78,7 @@ public class CourierServiceImpl implements CourierService {
         if (courier == null) {
             throw new NotFoundException("Cook not found");
         }
-        if (courier.getRestaurant().getId() != restaurant.getId()) {
+        if (!courier.getRestaurant().equals(restaurant)) {
             throw new NoPermissionException("Admin have no permissions to change this cook account");
         }
         if (courierRequestDTO.name() != null) {
@@ -102,11 +105,22 @@ public class CourierServiceImpl implements CourierService {
         if (courier == null) {
             throw new NotFoundException("Courier not found");
         }
-        if (courier.getRestaurant().getId() != restaurant.getId()) {
+        if (!courier.getRestaurant().equals(restaurant)) {
             throw new NoPermissionException("Admin have no permissions to delete this courier");
         }
 
         courierRepository.deleteById(id);
+    }
+
+    @Override
+    public Courier getCourier() throws NoPermissionException, UserNotLoggedInException {
+        User user = authContextHandler.getLoggedInUser();
+        Courier courier = courierRepository.findByUser(user);
+        if (courier == null) {
+            throw new NoPermissionException("User is not a courier");
+        }
+
+        return courier;
     }
 
     private Courier registerCourier(CourierRequestDTO courierRequestDTO) throws RegistrationException {

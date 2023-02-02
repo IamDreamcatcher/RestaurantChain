@@ -39,12 +39,12 @@ public class CartServiceImpl implements CartService {
             cart.setClient(clientService.getClient());
         }
         if (!cart.getCartItems().isEmpty() &&
-                cart.getCartItems().get(0).getProduct().getRestaurant().getId() != getRestaurant(id).getId()) {
+                !cart.getCartItems().get(0).getProduct().getRestaurant().equals(getRestaurant(id))) {
             throw new NoPermissionException("Products from order must be from the same restaurant.");
         }
         for(int i = 0; i < cart.getCartItems().size(); i++) {
             CartItem cartItem = cart.getCartItems().get(i);
-            if (cartItem.getProduct().getId() == cartItemDTO.getProductDTO().getId()) {
+            if (cartItem.getProduct().getId().equals(cartItemDTO.getProductDTO().getId())) {
                 cartItem.setAmount(cartItem.getAmount() + cartItemDTO.getAmount());
                 cart.getCartItems().set(i, cartItem);
                 cartItemDTO = null;
@@ -70,7 +70,7 @@ public class CartServiceImpl implements CartService {
 
         for(int i = 0; i < cart.getCartItems().size(); i++) {
             CartItem cartItem = cart.getCartItems().get(i);
-            if (cartItem.getProduct().getId() == cartItemDTO.getProductDTO().getId()) {
+            if (cartItem.getProduct().getId().equals(cartItemDTO.getProductDTO().getId())) {
                 if (cartItem.getAmount() - cartItemDTO.getAmount() < 0) {
                     throw new NotFoundException("Cart item in such amount not found");
                 }
@@ -138,7 +138,7 @@ public class CartServiceImpl implements CartService {
 
     private Product getProduct(Long pId, Restaurant restaurant) throws NotFoundException {
         Product product = productRepository.findProductById(pId);
-        if (product.getRestaurant().getId() != restaurant.getId()) {
+        if (!product.getRestaurant().equals(restaurant)) {
             throw new NotFoundException("This product doesn't belong to restaurant");
         }
         return product;

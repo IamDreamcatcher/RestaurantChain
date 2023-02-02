@@ -1,14 +1,12 @@
 package com.iamdreamcatcher.restaurantChain.service;
 
-import com.iamdreamcatcher.restaurantChain.dto.model.RestaurantDTO;
 import com.iamdreamcatcher.restaurantChain.dto.model.users.CookDTO;
 import com.iamdreamcatcher.restaurantChain.dto.request.CookRequestDTO;
 import com.iamdreamcatcher.restaurantChain.exception.NoPermissionException;
 import com.iamdreamcatcher.restaurantChain.exception.NotFoundException;
 import com.iamdreamcatcher.restaurantChain.exception.RegistrationException;
 import com.iamdreamcatcher.restaurantChain.exception.UserNotLoggedInException;
-
-import java.util.List;
+import com.iamdreamcatcher.restaurantChain.model.cook.Cook;
 
 public interface CookService {
     Iterable<CookDTO> getRestaurantCooks() throws UserNotLoggedInException, NoPermissionException;
@@ -19,4 +17,6 @@ public interface CookService {
     CookDTO updateCookAccount(Long id, CookRequestDTO cookRequestDTO) throws UserNotLoggedInException, NoPermissionException, NotFoundException;
 
     void deleteCookById(Long id) throws UserNotLoggedInException, NoPermissionException, NotFoundException;
+
+    Cook getCook() throws UserNotLoggedInException, NoPermissionException;
 }

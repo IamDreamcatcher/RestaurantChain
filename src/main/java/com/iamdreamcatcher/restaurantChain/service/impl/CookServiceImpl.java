@@ -15,6 +15,7 @@ import com.iamdreamcatcher.restaurantChain.model.user.Status;
 import com.iamdreamcatcher.restaurantChain.model.user.User;
 import com.iamdreamcatcher.restaurantChain.repository.CookRepository;
 import com.iamdreamcatcher.restaurantChain.repository.UserRepository;
+import com.iamdreamcatcher.restaurantChain.security.AuthContextHandler;
 import com.iamdreamcatcher.restaurantChain.service.AdministratorService;
 import com.iamdreamcatcher.restaurantChain.service.CookService;
 import com.iamdreamcatcher.restaurantChain.service.RestaurantService;
@@ -35,6 +36,7 @@ public class CookServiceImpl implements CookService {
     private final AdministratorService administratorService;
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder passwordEncoder;
+    private final AuthContextHandler authContextHandler;
 
     @Override
     public List<CookDTO> getRestaurantCooks() throws UserNotLoggedInException, NoPermissionException {
@@ -51,7 +53,7 @@ public class CookServiceImpl implements CookService {
         if (cook == null) {
             throw new NotFoundException("Cook not found");
         }
-        if (administrator.getRestaurant().getId() != cook.getRestaurant().getId()) {
+        if (!administrator.getRestaurant().equals(cook.getRestaurant())) {
             throw new NoPermissionException("That cook doesn't suit to this admin");
         }
         return cookMapper.toCookDto(cook);
@@ -74,7 +76,7 @@ public class CookServiceImpl implements CookService {
         if (cook == null) {
             throw new NotFoundException("Cook not found");
         }
-        if (cook.getRestaurant().getId() != restaurant.getId()) {
+        if (!cook.getRestaurant().equals(restaurant)) {
             throw new NoPermissionException("Admin have no permissions to change this cook account");
         }
         if (cookRequestDTO.name() != null) {
@@ -101,11 +103,22 @@ public class CookServiceImpl implements CookService {
         if (cook == null) {
             throw new NotFoundException("Cook not found");
         }
-        if (cook.getRestaurant().getId() != restaurant.getId()) {
+        if (!cook.getRestaurant().equals(restaurant)) {
             throw new NoPermissionException("Admin have no permissions to delete this cook");
         }
 
         cookRepository.deleteById(id);
+    }
+
+    @Override
+    public Cook getCook() throws UserNotLoggedInException, NoPermissionException {
+        User user = authContextHandler.getLoggedInUser();
+        Cook cook = cookRepository.findByUser(user);
+        if (cook == null) {
+            throw new NoPermissionException("User is not a cook");
+        }
+
+        return cook;
     }
 
     private Cook registerCook(CookRequestDTO cookRequestDTO) throws RegistrationException {

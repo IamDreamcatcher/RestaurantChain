@@ -89,7 +89,7 @@ public class ClientServiceImpl implements ClientService {
         List<Order> orders = orderRepository.findOrdersByRestaurant(administrator.getRestaurant());
         Client client = null;
         for(Order order: orders) {
-            if (order.getCart().getClient().getId() == id) {
+            if (order.getCart().getClient().getId().equals(id)) {
                 client = order.getCart().getClient();
             }
         }

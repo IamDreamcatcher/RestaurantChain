@@ -26,4 +26,5 @@ public class OrderDTO {
     private CookDTO cookDTO;
     private RestaurantDTO restaurantDTO;
     private Double price;
+    private String address;
 }

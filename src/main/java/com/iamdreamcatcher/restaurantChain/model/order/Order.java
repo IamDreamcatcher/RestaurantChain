@@ -35,4 +35,5 @@ public class Order {
     @JoinColumn(name = "cart_id")
     private Cart cart;
     private Double price;
+    private String address;
 }
